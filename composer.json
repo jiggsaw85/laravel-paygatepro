@@ -1,0 +1,22 @@
+{
+  "name": "jiggsawphp/paygatepro",
+  "description": "A Laravel package for handling multiple payment gateways.",
+  "type": "library",
+  "version": "1.0.0",
+  "require": {
+    "php": "^8.0",
+    "illuminate/support": "^10.0|^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "JiggsawPhp\\PayGatePro\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "JiggsawPhp\\PayGatePro\\Providers\\PaymentServiceProvider"
+      ]
+    }
+  }
+}
