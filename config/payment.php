@@ -8,4 +8,8 @@ return [
         'paysera' => JiggsawPhp\PayGatePro\Gateways\PayseraGateway::class,
         'paypal' => JiggsawPhp\PayGatePro\Gateways\PayPalGateway::class,
     ],
+
+    'stripe' => [
+        'api_key' => env('STRIPE_API_KEY'),
+    ],
 ];

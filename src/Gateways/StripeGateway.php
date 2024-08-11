@@ -5,10 +5,13 @@ namespace JiggsawPhp\PayGatePro\Gateways;
 use JiggsawPhp\PayGatePro\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\Facades\Log;
 use Stripe\StripeClient;
+use Stripe\Charge;
+use Stripe\Refund;
+use Stripe\Exception\ApiErrorException;
 
 class StripeGateway implements PaymentGatewayInterface
 {
-    protected $stripe;
+    protected StripeClient $stripe;
 
     public function __construct()
     {
@@ -16,44 +19,48 @@ class StripeGateway implements PaymentGatewayInterface
     }
 
     /**
+     * Charge the amount using Stripe.
+     *
      * @param float $amount
      * @param string $currency
      * @param array $options
-     * @return bool
+     * @return \Stripe\Charge|null
      */
-    public function charge(float $amount, string $currency, array $options = []): bool
+    public function charge(float $amount, string $currency, array $options = []): ?Charge
     {
         try {
-            $this->stripe->charges->create([
+            $charge = $this->stripe->charges->create([
                 'amount' => $amount * 100,
                 'currency' => $currency,
                 'source' => $options['source'],
                 'description' => $options['description'] ?? 'Charge',
             ]);
-            return true;
-        } catch (\Exception $e) {
+            return $charge;
+        } catch (ApiErrorException $e) {
             Log::error("Error in Stripe charge: {$e->getMessage()}");
-            return false;
+            return null;
         }
     }
 
     /**
+     * Refund a transaction using Stripe.
+     *
      * @param string $transactionId
      * @param float $amount
      * @param array $options
-     * @return bool
+     * @return \Stripe\Refund|null
      */
-    public function refund(string $transactionId, float $amount, array $options = []): bool
+    public function refund(string $transactionId, float $amount, array $options = []): ?Refund
     {
         try {
-            $this->stripe->refunds->create([
+            $refund = $this->stripe->refunds->create([
                 'charge' => $transactionId,
                 'amount' => $amount * 100,
             ]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error("Error in Stripe charge: {$e->getMessage()}");
-            return false;
+            return $refund;
+        } catch (ApiErrorException $e) {
+            Log::error("Error in Stripe refund: {$e->getMessage()}");
+            return null;
         }
     }
 }
