@@ -18,5 +18,12 @@
         "JiggsawPhp\\PayGatePro\\Providers\\PaymentServiceProvider"
       ]
     }
-  }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rados Nikolic",
+      "email": "radoshnikolic@gmail.com"
+    }
+  ]
 }
