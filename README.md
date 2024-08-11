@@ -34,7 +34,7 @@ To install PayGatePro, follow these steps:
    
 ## Usage
 
-Package supports Stripe, Paysera and PayPal payment gateways.
+Package supports Stripe, Authorize.net and PayPal payment gateways.
 
 In your .env add:
 
@@ -42,11 +42,12 @@ In your .env add:
    # jiggsawphp/paygatepro
    PAYMENT_GATEWAY=stripe
    STRIPE_API_KEY=your_stripe_key
+   PAYPAL_MODE=sandbox_or_live
    PAYPAL_CLIENT_ID=your_paypal_client_id
    PAYPAL_SECRET=your_paypal_secret
    ```
 
-PAYMENT_GATEWAY variable defines payment gateway you want to use (stripe, paysera, paypal).
+PAYMENT_GATEWAY variable defines payment gateway you want to use (stripe, paypal, authorize).
 
 1. Include PaymentService in your code and charge or refund methods from it.
 2. Example using PaymentService from PayGatePro package in controller:
