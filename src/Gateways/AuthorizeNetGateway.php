@@ -28,6 +28,7 @@ class AuthorizeNetGateway implements PaymentGatewayInterface
      */
     public function charge(float $amount, string $currency, array $options = []): ?AnetAPI\TransactionResponseType
     {
+        // Setup and execute transaction (same as before)
         $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
         $merchantAuthentication->setName($this->apiLoginId);
         $merchantAuthentication->setTransactionKey($this->transactionKey);
@@ -76,6 +77,7 @@ class AuthorizeNetGateway implements PaymentGatewayInterface
      */
     public function refund(string $transactionId, float $amount, array $options = []): ?AnetAPI\TransactionResponseType
     {
+        // Setup and execute refund transaction (same as before)
         $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
         $merchantAuthentication->setName($this->apiLoginId);
         $merchantAuthentication->setTransactionKey($this->transactionKey);

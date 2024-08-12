@@ -19,12 +19,10 @@ class StripeGateway implements PaymentGatewayInterface
     }
 
     /**
-     * Charge the amount using Stripe.
-     *
      * @param float $amount
      * @param string $currency
      * @param array $options
-     * @return \Stripe\Charge|null
+     * @return Charge|null
      */
     public function charge(float $amount, string $currency, array $options = []): ?Charge
     {
@@ -43,12 +41,10 @@ class StripeGateway implements PaymentGatewayInterface
     }
 
     /**
-     * Refund a transaction using Stripe.
-     *
      * @param string $transactionId
      * @param float $amount
      * @param array $options
-     * @return \Stripe\Refund|null
+     * @return Refund|null
      */
     public function refund(string $transactionId, float $amount, array $options = []): ?Refund
     {

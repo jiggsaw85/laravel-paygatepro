@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Log;
 use PayPal\Api\Amount;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
-use PayPal\Api\PaymentExecution;
 use PayPal\Api\Refund;
 use PayPal\Api\Sale;
 use PayPal\Api\RefundRequest;
@@ -36,12 +35,10 @@ class PayPalGateway implements PaymentGatewayInterface
     }
 
     /**
-     * Charge the amount using PayPal.
-     *
      * @param float $amount
      * @param string $currency
      * @param array $options
-     * @return \PayPal\Api\Payment|null
+     * @return Payment|null
      */
     public function charge(float $amount, string $currency, array $options = []): ?Payment
     {
@@ -79,12 +76,10 @@ class PayPalGateway implements PaymentGatewayInterface
     }
 
     /**
-     * Refund a transaction using PayPal.
-     *
      * @param string $transactionId
      * @param float $amount
      * @param array $options
-     * @return \PayPal\Api\Refund|null
+     * @return Refund|null
      */
     public function refund(string $transactionId, float $amount, array $options = []): ?Refund
     {

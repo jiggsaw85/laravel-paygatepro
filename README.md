@@ -36,73 +36,121 @@ To install PayGatePro, follow these steps:
 
 Package supports Stripe, Authorize.net and PayPal payment gateways.
 
+Get your credentials for payment gateway you want to use.
+
 In your .env add:
 
    ```bash
    # jiggsawphp/paygatepro
    PAYMENT_GATEWAY=stripe
+   # stripe
    STRIPE_API_KEY=your_stripe_key
+   # authorize.net
+   AUTHORIZE_NET_API_LOGIN_ID=your_api_login_id
+   AUTHORIZE_NET_TRANSACTION_KEY=your_transaction_key
+   # paypal
    PAYPAL_MODE=sandbox_or_live
    PAYPAL_CLIENT_ID=your_paypal_client_id
    PAYPAL_SECRET=your_paypal_secret
    ```
 
-PAYMENT_GATEWAY variable defines payment gateway you want to use (stripe, paypal, authorize).
+PAYMENT_GATEWAY variable defines payment gateway you want to use (default is stripe) (stripe, paypal or authorize).
 
-1. Include PaymentService in your code and charge or refund methods from it.
-2. Example using PaymentService from PayGatePro package in controller:
+1. Include PaymentService in your code and use charge or refund methods from it.
+2. Examples:
 
    ```bash
+    use JiggsawPhp\PayGatePro\Services\PaymentService;
+   
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
     }
 
     /**
-     * Handle a payment charge request.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Charge with Stripe
+     * @return JsonResponse
      */
-    public function charge(Request $request): JsonResponse
+    public function chargeWithStripe(): JsonResponse
     {
-        $amount = $request->input('amount'); // Amount to charge
-        $currency = $request->input('currency', 'USD'); // Currency for the transaction
-        
-        try {
-            $result = $this->paymentService->charge($amount, $currency);
+        $response = $this->paymentService->charge(100, 'USD', ['source' => 'tok_visa']);
 
-            if ($result) {
-                return response()->json(['message' => 'Payment successful'], Response::HTTP_OK);
-            } else {
-                return response()->json(['message' => 'Payment failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
-     * Handle a payment refund request.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Refund with Stripe
+     * @return JsonResponse
      */
-    public function refund(Request $request)
+    public function refundWithStripe(): JsonResponse
     {
-        $transactionId = $request->input('transaction_id'); // ID of the transaction to refund
-        $amount = $request->input('amount'); // Amount to refund
-        
-        try {
-            $result = $this->paymentService->refund($transactionId, $amount);
+        $response = $this->paymentService->charge(100, 'USD', ['source' => 'tok_visa']);
+        $refund = $this->paymentService->refund($response->id, 50, []);
 
-            if ($result) {
-                return response()->json(['message' => 'Refund successful']);
-            } else {
-                return response()->json(['message' => 'Refund failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response()->json($refund, Response::HTTP_OK);
+    }
+
+    /**
+     * Charge with PayPal
+     * @return JsonResponse
+     */
+    public function chargeWithPayPal(): JsonResponse
+    {
+        $response = $this->paymentService->charge(100.00, 'USD', [
+            'return_url' => route('payment.success'),
+            'cancel_url' => route('payment.cancel'),
+            'description' => 'Payment for Order #12345',
+        ]);
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Refund with PayPal
+     * @return JsonResponse
+     */
+    public function refundWithPayPal(): JsonResponse
+    {
+        $charge = $this->paymentService->charge(100.00, 'USD', [
+            'return_url' => route('payment.success'),
+            'cancel_url' => route('payment.cancel'),
+            'description' => 'Payment for Order #12345',
+        ]);
+        $refund = $this->paymentService->refund($charge->id, 50.00);
+
+        return response()->json($refund, Response::HTTP_OK);
+    }
+
+    /**
+     * Charge with Authorize.net
+     * @return JsonResponse
+     */
+    public function chargeWithAuthorize(): JsonResponse
+    {
+        $response = $this->paymentService->charge(100.00, 'USD', [
+            'card_number' => '4111111111111111',
+            'expiration_date' => '2024-12',
+            'cvv' => '123',
+        ]);
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Refund with Authorize.net
+     * @return JsonResponse
+     */
+    public function refundWithAuthorize(): JsonResponse
+    {
+        $charge = $this->paymentService->charge(100.00, 'USD', [
+            'card_number' => '4111111111111111',
+            'expiration_date' => '2024-12',
+            'cvv' => '123',
+        ]);
+        $refund = $this->paymentService->refund($charge->id, 50.00, [
+            'card_number' => '4111111111111111',
+        ]);
+
+        return response()->json($refund, Response::HTTP_OK);
     }
 }
