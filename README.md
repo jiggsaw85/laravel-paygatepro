@@ -153,4 +153,3 @@ PAYMENT_GATEWAY variable defines payment gateway you want to use (default is str
 
         return response()->json($refund, Response::HTTP_OK);
     }
-}
